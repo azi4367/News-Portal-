@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1> Welciome To Admin Panel  </h1>
+
+    <a href="/"> Back To Home </a> <br><br> <hr> <br>
+    <!-- <a href="/logout_admin">LogOut</a><br><br> -->
+
+    <a href="/logout">🚪 Logout</a>
+
+
+    {% if error %}
+    <p style="color: red; font-weight: bolder;">  {{ error }}  </p>
+    {% endif %}
+
+    <form action="/submit" method="POST" enctype="multipart/form-data">
+
+        Select Category:
+        <select name="category" required>
+            <option value="News">News</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Suvichar">Suvichar</option>
+        </select> 
+        <br><br>
+
+        Heading : <input type="text" name="heading" required> <br><br>
+
+        Discreptions: <input type="text" name="descreptions" required> <br><br>
+
+        Upload Photo : <input type="file" name="photo" accept="image/*" required> <br><br>
+
+        <button type="submit">Submit</button>
+
+    </form>
+
+
+    <h1> All Category :   </h1>
+
+    <a href="/admin"> <button> All </button> </a>
+    <a href="/admin?category=News"> <button> News </button> </a>
+    <a href="/admin?category=Entertainment"> <button> Entertainment </button> </a>
+    <a href="/admin?category=Suvichar"> <button> Weather News </button> </a>
+
+
+
+    {% for post in all_post_here %}
+
+    <p> Category : {{ post.category }} </p>
+
+    <p> <img src="{{ post.photo }}" alt="img" width="300px"> </p>
+
+    <p> Category : {{ post.category }} </p>
+
+    <p> Post Time : {{ post.post_time }} </p>
+
+    <p> Heading : {{ post.heading }} </p>
+
+    <p> Descreptions : {{ post.descreptions }} </p>
+
+    <p> <a href="/delete/{{ post.id }}">Delete This Post ... </a> </p>
+
+    {% else %}
+
+    <p> No Post yet ...  </p>
+
+
+    {% endfor %}
+</body>
+</html>

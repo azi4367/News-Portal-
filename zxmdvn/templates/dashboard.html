@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <style>
+      .reply-box,
+      .comment-box {
+        display: none;
+        margin-top: 10px;
+      }
+      .clickable {
+        color: blue;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .comment {
+        margin-bottom: 15px;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Category Buttons</h2>
+
+    <a href="/"> <button>All</button> </a>
+    <a href="/?category=News"> <button>News</button> </a>
+    <a href="/?category=Entertainment"> <button>Entertainment</button> </a>
+    <a href="/?category=Suvichar"> <button>Suvichar</button> </a>
+
+    <hr />
+
+    <h2>📰 All Posts</h2>
+
+    {% if session.name %}
+    <h1>Welcome, {{ session.name }}</h1>
+    <a href="/logout">LogOut</a><br /><br />
+
+    <a href="/admin_access"> Back To Home </a> <br /><br />
+    <hr />
+    <br />
+
+    {% for post in all_content_here %}
+    <div>
+      <img src="{{ post.photo }}" width="300px" /><br />
+      <p>Post Time : {{ post.post_time }}</p>
+      <strong>Category:</strong> {{ post.category }}<br />
+      <p>Heading : {{ post.heading }}</p>
+
+      <p>
+        <a href="/vote/{{ post.id }}/like">👍 Like ({{ post.likes }})</a>
+        &nbsp;&nbsp;
+        <a href="/vote/{{ post.id }}/dislike"
+          >👎 Dislike ({{ post.dislikes }})</a
+        >
+      </p>
+
+      <p>Descreptions : {{post.descreptions }}</p>
+
+      <form action="/comment/{{ post.id }}" method="POST">
+        <input type="text" name="comment" required />
+        <button type="submit">Post</button>
+      </form>
+
+      {% set comment_count = all_comment_here | selectattr('photo_id',
+      'equalto', post.id) | list | length %}
+      <p class="clickable" onclick="toggleBox('comment-box-{{ post.id }}')">
+        💬 View Comments ({{ comment_count }})
+      </p>
+
+      <div id="comment-box-{{ post.id }}" class="comment-box">
+        {% for comment in all_comment_here %} {% if comment.photo_id == post.id
+        %}
+        <div class="comment">
+          <b>{{ comment.user_name }}</b>: {{ comment.text }}
+          <small>{{ comment.post_time }}</small>
+          {% if comment.user_email == session.email %}
+          <a href="/delete_comment/{{ comment.id }}">Delete Comment</a>
+          {% endif %} {% set replies = all_reply_here | selectattr('comment_id',
+          'equalto', comment.id) | list %}
+          <p
+            class="clickable"
+            onclick="toggleBox('reply-box-{{ comment.id }}')"
+          >
+            ↪️ Reply ({{ replies | length }})
+          </p>
+
+          <div id="reply-box-{{ comment.id }}" class="reply-box">
+            <form action="/reply/{{ comment.id }}" method="POST">
+              <input type="text" name="reply" required />
+              <button type="submit">Reply</button>
+            </form>
+
+            {% for reply in replies %}
+            <p>
+              <b>{{ reply.user_name }}</b>: {{ reply.text }}
+              <small>{{ reply.post_time }}</small>
+              {% if reply.user_email == session.email %}
+              <a href="/delete_reply/{{ reply.id }}">Delete Reply</a>
+              {% endif %}
+            </p>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %} {% endfor %}
+      </div>
+    </div>
+
+    {% else %}
+
+    <p>No posts available in this category.</p>
+
+    {% endfor %} 
+    
+    {% else %}
+
+    <h1>Welcome To My Website</h1>
+
+
+    {% for post in all_content_here %}
+
+    <img src="{{ post.photo }}" width="300px" /><br />
+      <p>Post Time : {{ post.post_time }}</p>
+      <strong>Category:</strong> {{ post.category }}<br />
+      <p>Heading : {{ post.heading }}</p>
+
+      <p>
+        <a href="/vote/{{ post.id }}/like">👍 Like ({{ post.likes }})</a>
+        &nbsp;&nbsp;
+        <a href="/vote/{{ post.id }}/dislike"
+          >👎 Dislike ({{ post.dislikes }})</a
+        >
+      </p>
+
+      <p>Descreptions : {{post.descreptions }}</p>
+
+
+      <form action="/comment/{{ post.id }}" method="POST">
+        <input type="text" name="comment" required />
+        <button type="submit">Post</button>
+      </form>
+
+      {% set comment_count = all_comment_here | selectattr('photo_id',
+      'equalto', post.id) | list | length %}
+      <p class="clickable" onclick="toggleBox('comment-box-{{ post.id }}')">
+        💬 View Comments ({{ comment_count }})
+      </p>
+
+      <div id="comment-box-{{ post.id }}" class="comment-box">
+        {% for comment in all_comment_here %} {% if comment.photo_id == post.id
+        %}
+        <div class="comment">
+          <b>{{ comment.user_name }}</b>: {{ comment.text }}
+          <small>{{ comment.post_time }}</small>
+          {% if comment.user_email == session.email %}
+          <a href="/delete_comment/{{ comment.id }}">Delete Comment</a>
+          {% endif %} {% set replies = all_reply_here | selectattr('comment_id',
+          'equalto', comment.id) | list %}
+          <p
+            class="clickable"
+            onclick="toggleBox('reply-box-{{ comment.id }}')"
+          >
+            ↪️ Reply ({{ replies | length }})
+          </p>
+
+          <div id="reply-box-{{ comment.id }}" class="reply-box">
+            <form action="/reply/{{ comment.id }}" method="POST">
+              <input type="text" name="reply" required />
+              <button type="submit">Reply</button>
+            </form>
+
+            {% for reply in replies %}
+            <p>
+              <b>{{ reply.user_name }}</b>: {{ reply.text }}
+              <small>{{ reply.post_time }}</small>
+              {% if reply.user_email == session.email %}
+              <a href="/delete_reply/{{ reply.id }}">Delete Reply</a>
+              {% endif %}
+            </p>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %} {% endfor %}
+      </div>
+
+    {% endfor %}
+
+
+
+
+    <a href="/login">Login</a>
+
+    {% endif %}
+
+    <script>
+      function toggleBox(id) {
+        const box = document.getElementById(id);
+        if (!box) return;
+        box.style.display =
+          box.style.display === "none" || box.style.display === ""
+            ? "block"
+            : "none";
+      }
+    </script>
+  </body>
+</html>
